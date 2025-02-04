@@ -1,0 +1,50 @@
+# Python-specific exclusions
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.log
+
+# Virtual environment
+venv/
+env/
+.env/
+.venv/
+
+# Development and testing files
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# Dependency caches and build artifacts
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+build/
+dist/
+*.egg-info/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Backup and temporary files
+*.bak
+*.tmp
+
+# Sensitive or unnecessary files
+.git/
+.gitignore
+README.md
+CHANGELOG.md
+CONTRIBUTING.md
+
+# Specific to your project
+local_settings.py
+db.sqlite3
+media/ 
