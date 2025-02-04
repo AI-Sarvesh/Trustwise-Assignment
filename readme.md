@@ -6,135 +6,192 @@ This project provides a comprehensive text analysis API built with FastAPI for t
 
 - [Features](#features)
 - [Technologies](#technologies)
+- [Prerequisites](#prerequisites)
+- [Docker Setup](#docker-setup)
+- [Local Development Setup](#local-development-setup)
 - [Backend](#backend)
 - [Frontend](#frontend)
 - [Prometheus Monitoring](#prometheus-monitoring)
-- [Installation](#installation)
-- [Usage](#usage)
 - [Running Tests](#running-tests)
 - [Contributing](#contributing)
 - [License](#license)
 
 ## Features
 
-- **Emotion Analysis**: Analyze text to detect emotions.
-- **Hallucination Detection**: Evaluate the reliability of the text.
-- **Performance Monitoring**: Monitor API performance and resource usage with Prometheus.
-- **Rate Limiting**: Control the number of requests to the API.
-- **History Retrieval**: Access previous analysis results.
+- **Emotion Analysis**: Analyze text to detect top 3 emotions using Hugging Face's emotion-english-distilroberta-base model
+- **Real-time Processing**: Fast and efficient text analysis
+- **Performance Monitoring**: Monitor API performance and resource usage with Prometheus
+- **Rate Limiting**: Control the number of requests to the API
+- **History Retrieval**: Access previous analysis results
+- **Docker Support**: Easy deployment with Docker containers
 
 ## Technologies
 
-- **Backend**: FastAPI, SQLAlchemy, Pydantic
-- **Frontend**: React, Vite, Tailwind CSS
+- **Backend**: 
+  - FastAPI
+  - SQLAlchemy
+  - Pydantic
+  - Hugging Face Transformers
+- **Frontend**: 
+  - React
+  - Vite
+  - Tailwind CSS
 - **Database**: SQLite
+- **Containerization**: Docker & Docker Compose
 - **Monitoring**: Prometheus
 - **Testing**: Pytest, Locust
 
-## Backend
+## Prerequisites
 
-The backend is built using FastAPI and provides RESTful endpoints for text analysis. It includes:
+- Docker and Docker Compose
+- Git
+- Node.js 16+ (for local development)
+- Python 3.10+ (for local development)
 
-- **Endpoints**:
-  - `POST /analyze`: Analyze text for emotions and hallucination scores.
-  - `GET /history`: Retrieve analysis history.
-  - `GET /pool-status`: Monitor database connection pool status.
-  - `GET /metrics`: Expose metrics for Prometheus.
+## Docker Setup
 
-### Setup
+1. **Clone the Repository**:
+   ```bash
+   git clone <repository-url>
+   cd <repository-directory>
+   ```
 
-1. Navigate to the `backend` directory.
-2. Install dependencies:
+2. **Build and Start Containers**:
+   ```bash
+   docker compose build --no-cache
+   docker compose up
+   ```
+
+3. **Access the Applications**:
+   - Frontend: http://localhost:5173
+   - Backend API: http://localhost:8000
+   - Prometheus: http://localhost:9090
+
+4. **Stop the Containers**:
+   ```bash
+   docker compose down
+   ```
+
+5. **View Logs**:
+   ```bash
+   # All services
+   docker compose logs
+
+   # Specific service
+   docker compose logs backend
+   docker compose logs frontend
+   ```
+
+6. **Rebuild Single Service**:
+   ```bash
+   docker compose build backend
+   # or
+   docker compose build frontend
+   ```
+
+## Local Development Setup
+
+### Backend
+
+1. Navigate to the `backend` directory:
+   ```bash
+   cd backend
+   ```
+
+2. Create and activate virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-3. Set up environment variables in a `.env` file.
 
-## Frontend
+4. Set up environment variables in a `.env` file:
+   ```env
+   DATABASE_URL=sqlite:///./analysis.db
+   FRONTEND_URL=http://localhost:5173
+   ```
 
-The frontend is built with React and Vite, providing a user-friendly interface for interacting with the API. It includes:
+5. Start the server:
+   ```bash
+   uvicorn app.main:app --reload
+   ```
 
-- **Components**:
-  - Text input for analysis.
-  - Display of analysis results and history.
-  - Graphs for visualizing hallucination scores and emotions.
+### Frontend
 
-### Setup
+1. Navigate to the `frontend` directory:
+   ```bash
+   cd frontend
+   ```
 
-1. Navigate to the `frontend` directory.
 2. Install dependencies:
    ```bash
    npm install
    ```
-3. Start the development server:
+
+3. Create `.env` file:
+   ```env
+   VITE_API_URL=http://localhost:8000
+   ```
+
+4. Start development server:
    ```bash
    npm run dev
    ```
 
 ## Prometheus Monitoring
 
-Prometheus is used for monitoring the backend API's performance and resource usage. The configuration file is located in the `prometheus` directory.
+Prometheus is configured to collect metrics from the backend API. Key metrics include:
+- Request latency
+- Request count
+- Error rates
+- Resource usage
 
-### Setup
+### Accessing Metrics
 
-1. Navigate to the `prometheus` directory.
-2. Start Prometheus with the configuration:
-   ```bash
-   prometheus --config.file=prometheus.yml
-   ```
-
-## Installation
-
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd <repository-directory>
-   ```
-2. Follow the setup instructions for both the backend and frontend.
-
-## Usage
-
-1. Start the backend server:
-   ```bash
-   uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-   ```
-2. Start the frontend server as described above.
-3. Access the application at `http://localhost:5173`.
+1. View raw metrics: http://localhost:8000/metrics
+2. Access Prometheus UI: http://localhost:9090
 
 ## Running Tests
 
-To run tests for the backend, navigate to the `backend` directory and execute:
-To ensure the backend is functioning correctly, you can run the tests using Pytest. Follow these steps:
+### Backend Tests
+```bash
+cd backend
+pytest
+```
 
-1. **Navigate to the Backend Directory**:
-   Open your terminal and change to the backend directory:
+### Frontend Tests
+```bash
+cd frontend
+npm test
+```
+
+## Troubleshooting
+
+### Common Docker Issues
+
+1. **Port Conflicts**:
    ```bash
-   cd backend
+   # Check for port usage
+   lsof -i :5173
+   lsof -i :8000
    ```
 
-2. **Run Tests**:
-   Execute the following command to run all tests:
+2. **Container Cleanup**:
    ```bash
-   pytest
-   ```
-   This command will discover and run all test files that match the pattern `test_*.py` or `*_test.py` in the backend directory.
+   # Remove all stopped containers
+   docker container prune
 
-3. **View Test Results**:
-   After running the tests, Pytest will provide a summary of the test results in the terminal. You will see how many tests passed, failed, or were skipped.
-
-4. **Running Specific Tests**:
-   If you want to run a specific test file, you can specify the file name:
-   ```bash
-   pytest tests/test_file.py
+   # Remove all unused images
+   docker image prune -a
    ```
 
-5. **Running Tests with Coverage**:
-   To check the test coverage, you can use the `pytest-cov` plugin. First, ensure it is installed:
+3. **Reset Everything**:
    ```bash
-   pip install pytest-cov
+   docker compose down -v
+   docker system prune -a
    ```
-   Then run:
-   ```bash
-   pytest --cov=app
-   ```
-   This will show you the coverage report for the `app` module.
+

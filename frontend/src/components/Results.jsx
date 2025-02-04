@@ -27,13 +27,13 @@ const Results = ({ history, setHistory }) => {
       setLoading(true);
       const response = await fetch(`${import.meta.env.VITE_API_URL}/history`);
       if (!response.ok) {
-        throw new Error('Failed to fetch history');
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
       setHistory(data);
       setError(null);
-    } catch (err) {
-      console.error('Error fetching history:', err);
+    } catch (error) {
+      console.error('Error fetching history:', error);
       setError('Failed to load analysis history');
     } finally {
       setLoading(false);
