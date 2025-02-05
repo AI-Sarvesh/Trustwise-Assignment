@@ -88,7 +88,112 @@ This project provides a comprehensive text analysis API built with FastAPI for t
    # or
    docker compose build frontend
    ```
+## Deployment Instructions
 
+### Preparing for Deployment
+
+1. **Update API URLs**:
+
+   In `frontend/src/api/index.js`:
+   ```javascript
+   // Replace these URLs with your deployed backend URLs
+   const ANALYZE_URL = 'https://your-backend-domain/analyze';
+   const HISTORY_URL = 'https://your-backend-domain/history';
+   ```
+
+2. **Update CORS Settings**:
+
+   In `backend/app/main.py`:
+   ```python
+   app.add_middleware(
+       CORSMiddleware,
+       allow_origins=[
+           "https://your-frontend-domain",
+           "https://*.your-domain.com"  # If using subdomains
+       ],
+       allow_credentials=True,
+       allow_methods=["*"],
+       allow_headers=["*"]
+   )
+   ```
+
+### Docker Image Usage
+
+1. **Pull the Docker Images**:
+   ```bash
+   docker pull aisarvesh/text-analysis-backend:latest
+   docker pull aisarvesh/text-analysis-frontend:latest
+   ```
+
+2. **Run the Containers**:
+   ```bash
+   # Run backend
+   docker run -d -p 8000:8000 \
+     -e DATABASE_URL=sqlite:///./analysis.db \
+     -e FRONTEND_URL=https://your-frontend-domain \
+     aisarvesh/text-analysis-backend:latest
+
+   # Run frontend
+   docker run -d -p 5173:5173 \
+     -e VITE_API_URL=https://your-backend-domain \
+     aisarvesh/text-analysis-frontend:latest
+   ```
+
+3. **Environment Variables**:
+
+   Backend:
+   - `DATABASE_URL`: Your database connection string
+   - `FRONTEND_URL`: Your frontend application URL
+
+   Frontend:
+   - `VITE_API_URL`: Your backend API URL
+
+### Deployment Checklist
+
+1. [ ] Update API URLs in frontend code
+2. [ ] Update CORS settings in backend
+3. [ ] Configure environment variables
+4. [ ] Set up SSL/TLS certificates
+5. [ ] Configure domain names
+6. [ ] Set up database (if using external database)
+7. [ ] Test API connectivity
+8. [ ] Verify CORS settings
+9. [ ] Check security headers
+
+### Production Considerations
+
+1. **SSL/TLS**: Ensure both frontend and backend use HTTPS
+2. **Database**: Consider using a production-grade database instead of SQLite
+3. **Monitoring**: Set up proper monitoring and logging
+4. **Backups**: Implement regular database backups
+5. **Rate Limiting**: Adjust rate limits based on your needs
+6. **Security**: Review and implement security best practices
+
+### Troubleshooting Deployment
+
+1. **CORS Issues**:
+   - Verify frontend URL in backend CORS settings
+   - Check for exact URL matches (including http/https)
+   - Use browser dev tools to inspect CORS errors
+
+2. **API Connection**:
+   - Verify API URLs are correct
+   - Check network tab in browser dev tools
+   - Ensure ports are properly exposed
+
+3. **Database Issues**:
+   - Verify database connection string
+   - Check database permissions
+   - Ensure migrations are applied
+
+4. **Container Health**:
+   ```bash
+   # Check container logs
+   docker logs <container_id>
+
+   # Check container status
+   docker ps -a
+   ```
 ## Local Development Setup
 
 ### Backend
